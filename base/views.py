@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from .models import Room
+from .models import Room, Topic
 from .forms import RoomForm
 # Create your views here.
 """ 
@@ -12,7 +12,9 @@ rooms=[
 
 def home(request):
     rooms=Room.objects.all()
-    return render(request, 'base/home.html',{'rooms':rooms})
+    topics = Topic.objects.all()
+    context={'room':room, 'topics':topics}
+    return render(request, 'base/home.html',context)
 
 def room(request, pk):
     room = Room.objects.get(id=pk)
@@ -43,3 +45,10 @@ def updateRoom(request, pk):
 
     context = {'form':form}
     return render(request, 'base/room_form.html',context)
+
+def deleteRoom(request, pk):
+    room = Room.objects.get(id=pk)
+    if request.method == 'POST':
+        room.delete()
+        return redirect('home')
+    return render(request,'base/delete.html',{'obj':room})
